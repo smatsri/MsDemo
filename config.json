@@ -1,0 +1,14 @@
+{
+    "datacenter": "home",
+    "data_dir": "C:\\Consul\\",
+    "log_level": "INFO",
+    "node_name": "home",
+    "server": true,
+    "bind_addr": "127.0.0.1",
+    "bootstrap": true,
+    "ui": true,
+    "log_file" : "C:\\Consul\\consul.log" ,
+	"telemetry": {
+		"prometheus_retention_time": "30s"
+	}
+  }

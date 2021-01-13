@@ -1,0 +1,32 @@
+﻿{
+  "Routes": [
+    {
+      "DownstreamPathTemplate": "/api/{rest}",
+      "DownstreamScheme": "http",
+      "UpstreamPathTemplate": "/api/hello/{rest}",
+      "UpstreamHttpMethod": [ "Get" ],
+      "ServiceName": "HelloService",
+      "LoadBalancerOptions": {
+        "Type": "LeastConnection"
+      }
+    },
+    {
+      "DownstreamPathTemplate": "/{rest}",
+      "DownstreamScheme": "http",
+      "UpstreamPathTemplate": "/{rest}",
+      "UpstreamHttpMethod": [ "Get" ],
+      "ServiceName": "Front",
+      "LoadBalancerOptions": {
+        "Type": "LeastConnection"
+      }
+    }
+  ],
+  "GlobalConfiguration": {
+    "ServiceDiscoveryProvider": {
+      "Scheme": "http",
+      "Host": "localhost",
+      "Port": 8500,
+      "Type": "Consul"
+    }
+  }
+}
