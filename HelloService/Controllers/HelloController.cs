@@ -1,18 +1,25 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace HelloService.Controllers
 {
 	public class HelloController : Controller
 	{
-		[Route("api/greet/{name}")]
-		public IActionResult Index(string name)
+		[HttpGet, Route("hello/{name}")]
+		//[ProducesResponseType(typeof(string), 200)]
+		public GreetResopose Get(string name)
 		{
 			var message = $"hello {name}";
-			return Ok(message);
+			return new GreetResopose(message);
+		}
+
+		public class GreetResopose
+		{
+			public GreetResopose(string message)
+			{
+				Message = message;
+			}
+
+			public string Message { get; }
 		}
 	}
 }

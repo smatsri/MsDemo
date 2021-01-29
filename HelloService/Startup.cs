@@ -8,7 +8,7 @@ using Microsoft.Extensions.Configuration;
 using System.IO;
 using Infrastructure.Consul;
 using Prometheus;
-using HelloService.Services;
+using Microsoft.OpenApi.Models;
 
 namespace ConsulDemo
 {
@@ -25,11 +25,15 @@ namespace ConsulDemo
 		public void ConfigureServices(IServiceCollection services)
 		{
 			services.AddControllers();
+			services.AddSwaggerGen(c =>
+			{
+				c.SwaggerDoc("v1", new OpenApiInfo { Title = "WebApplication3", Version = "v1" });
+			});
+			services.AddControllers();
 			services.AddConsul(configuration);
 			services.AddHealthChecks()
 				.AddCheck<HealthChecks.MainCheck>("main health check");
 
-			services.AddGrpc();
 		}
 
 		public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IHostApplicationLifetime lifetime)
@@ -37,7 +41,17 @@ namespace ConsulDemo
 			if (env.IsDevelopment())
 			{
 				app.UseDeveloperExceptionPage();
+				app.UseSwagger();
+				app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "WebApplication3 v1"));
 			}
+
+			//app.UseHttpsRedirection();
+
+			app.UseRouting();
+
+			//app.UseAuthorization();
+
+
 
 			app.UseConsul(lifetime);
 			app.UseRouting();
@@ -56,10 +70,9 @@ namespace ConsulDemo
 				endpoints.MapHealthChecks("/health");
 				endpoints.MapControllers();
 				endpoints.MapMetrics();
-				endpoints.MapGrpcService<GreeterService>();
 			});
 
-        }
+		}
 	}
 
 
