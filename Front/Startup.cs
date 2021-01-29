@@ -6,10 +6,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Prometheus;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using System.Net.Http;
 
 namespace Front
 {
@@ -29,6 +26,17 @@ namespace Front
 			services.AddConsul(Configuration);
 			services.AddHealthChecks()
 				.AddCheck<HealthChecks.MainCheck>("main health check");
+			services.AddServiceDiscovery();
+
+			services.AddHttpClient();
+			services.AddTransient(sp =>
+			{
+				var factroy = sp.GetService<IHttpClientFactory>();
+				var sd = sp.GetService<ServiceDiscovery>();
+				var url = sd.GetUrl("HelloService");
+				var client = factroy.CreateClient();
+				return new HelloServiceClient(url.Http, client);
+			});
 		}
 
 		// This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -44,6 +52,7 @@ namespace Front
 				// The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
 				app.UseHsts();
 			}
+			app.UseServiceDiscovery();
 			app.UseHttpsRedirection();
 			app.UseStaticFiles();
 			app.UseConsul(lifetime);
@@ -51,6 +60,8 @@ namespace Front
 			app.UseHttpMetrics();
 
 			app.UseAuthorization();
+
+
 
 			app.UseEndpoints(endpoints =>
 			{
@@ -60,6 +71,8 @@ namespace Front
 					pattern: "{controller=Home}/{action=Index}/{id?}");
 				endpoints.MapMetrics();
 			});
+
+
 		}
 	}
 }

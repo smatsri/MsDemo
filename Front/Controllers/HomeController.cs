@@ -1,10 +1,7 @@
 ﻿using Front.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace Front.Controllers
@@ -12,15 +9,18 @@ namespace Front.Controllers
 	public class HomeController : Controller
 	{
 		private readonly ILogger<HomeController> _logger;
+		private readonly HelloServiceClient helloService;
 
-		public HomeController(ILogger<HomeController> logger)
+		public HomeController(ILogger<HomeController> logger, HelloServiceClient helloService)
 		{
 			_logger = logger;
+			this.helloService = helloService;
 		}
 
-		public IActionResult Index()
+		public async Task<IActionResult> Index()
 		{
-			return View();
+			var response =  await helloService.HelloAsync("asd");
+			return Ok(response);
 		}
 
 		public IActionResult Privacy()
